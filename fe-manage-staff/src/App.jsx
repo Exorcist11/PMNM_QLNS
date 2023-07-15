@@ -1,10 +1,10 @@
-import Home from "./pages/Home";
-import Header from "./components/Header";
+import Header from "./components/DefaultLayout/Header";
+import VerticalTabs from "./components/Menu";
 function App() {
   return (
     <>
       <Header />
-      <Home />
+      <VerticalTabs />
     </>
   );
 }

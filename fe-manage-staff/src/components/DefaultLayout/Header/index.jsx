@@ -1,6 +1,6 @@
-import { Box, Avatar } from "@mui/material";
-import { purple } from "@mui/material/colors";
+import { Box } from "@mui/material";
 import SuperscriptIcon from "@mui/icons-material/Superscript";
+import AccountMenu from "../AccountMenu";
 function Header() {
   return (
     <Box
@@ -19,12 +19,7 @@ function Header() {
         <h2>Group 2</h2>
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-        <label>Xin chao, ...</label>
-        <Avatar sx={{ bgcolor: purple[500], width: "35px", height: "35px" }}>
-          D
-        </Avatar>
-      </Box>
+      <AccountMenu />
     </Box>
   );
 }
