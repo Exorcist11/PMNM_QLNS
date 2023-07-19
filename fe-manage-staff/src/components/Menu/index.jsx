@@ -5,7 +5,7 @@ import Tab from "@mui/material/Tab";
 import HomeIcon from "@mui/icons-material/Home";
 import PersonIcon from "@mui/icons-material/Person";
 import PeopleIcon from "@mui/icons-material/People";
-import NewspaperIcon from "@mui/icons-material/Newspaper";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import InfoIcon from "@mui/icons-material/Info";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import Typography from "@mui/material/Typography";
@@ -93,9 +93,9 @@ export default function VerticalTabs() {
           {...a11yProps(2)}
         />
         <Tab
-          icon={<NewspaperIcon />}
+          icon={<NotificationsIcon />}
           iconPosition="start"
-          label="Tin tức"
+          label="Thông báo"
           {...a11yProps(3)}
         />
         <Tab
