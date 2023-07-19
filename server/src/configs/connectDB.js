@@ -13,9 +13,9 @@ const connectDB = async () => {
       useUnifiedTopology: true,
       // Các tùy chọn khác nếu cần thiết
     });
-    console.log("Đã kết nối đến MongoDB");
+    console.log("✅ Connect to MongoDB successed!");
   } catch (error) {
-    console.error("Lỗi kết nối đến MongoDB:", error);
+    console.error("⭕ Connect to MongoDB failed:", error);
   }
 };
 
