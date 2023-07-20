@@ -1,9 +1,11 @@
 import express from "express";
-//import staffRouter from "./staffRouter";
+import userRouter from "./user";
+import departmentRouter from "./department";
 const router = express.Router();
 
 let initWebRoutes = (app) => {
-  //app.use("/manage-staff/staff", staffRouter);
+  app.use("/manage-staff", userRouter);
+  app.use("/departments", departmentRouter);
   app.use("/", router);
 };
 

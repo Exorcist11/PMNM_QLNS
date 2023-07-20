@@ -1,5 +1,4 @@
 // db.js
-
 const mongoose = require("mongoose");
 
 // Địa chỉ kết nối đến cơ sở dữ liệu MongoDB
@@ -18,5 +17,6 @@ const connectDB = async () => {
     console.error("⭕ Connect to MongoDB failed:", error);
   }
 };
+
 
 module.exports = connectDB;
