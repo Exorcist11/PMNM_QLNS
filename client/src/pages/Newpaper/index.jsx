@@ -1,3 +1,3 @@
-export default function New() {
-  return <div>New</div>;
+export default function Newpaper() {
+  return <div>Newpaper</div>;
 }

@@ -1,7 +1,3 @@
-
-
-export default function InfomationStaff() {
-  return (
-    <div>InfomationStaff</div>
-  )
+export default function InformationStaff() {
+  return <div>InformationStaff</div>;
 }

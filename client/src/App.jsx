@@ -1,12 +1,29 @@
-import Header from "./components/DefaultLayout/Header";
-import VerticalTabs from "./components/Menu";
-function App() {
+import { Route, Routes } from "react-router-dom";
+import { publicRoute } from "./routes";
+import DefaultLayout from "./components";
+import { Box } from "@mui/material";
+import { Fragment } from "react";
+
+export default function App() {
   return (
-    <>
-      <Header />
-      <VerticalTabs />
-    </>
+    <Box>
+      <Routes>
+        {publicRoute.map((route, index) => {
+          const Layout = route.layout === null ? Fragment : DefaultLayout;
+          const Page = route.component;
+          return (
+            <Route
+              key={index}
+              path={route.path}
+              element={
+                <Layout>
+                  <Page />
+                </Layout>
+              }
+            />
+          );
+        })}
+      </Routes>
+    </Box>
   );
 }
-
-export default App;
