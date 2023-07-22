@@ -10,11 +10,7 @@ export const getAllDepartment = async (req, res) => {
         errorMsg: "404 Not Found!",
       });
     } else {
-      res.status(200).json({
-        errCode: 0,
-        errMsg: "Retrieving departmental data successfully",
-        data: departments,
-      });
+      res.status(200).json(departments);
     }
   } catch (error) {
     res.status(500).json({

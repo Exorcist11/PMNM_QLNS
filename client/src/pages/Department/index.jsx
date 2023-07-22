@@ -1,89 +1,172 @@
-/* eslint-disable no-console */
-import { Box, Button } from "@mui/material";
+import { Box } from "@mui/material";
 import axios from "axios";
-import AddIcon from "@mui/icons-material/Add";
-import { DataGrid } from "@mui/x-data-grid";
-import { useState, useEffect } from "react";
-import { Delete, Edit } from "@mui/icons-material";
+import { useEffect, useState } from "react";
+import IconButton from "@mui/material/IconButton";
+import SkipNextIcon from "@mui/icons-material/SkipNext";
+import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-const DataGridFromApi = () => {
-  const columns = [
-    { field: "departmentID", headerName: "ID", width: 90 },
-    { field: "departmentName", headerName: "Department Name", flex: 1 },
-    { field: "departmentHead", headerName: "Trưởng phòng", flex: 1 },
-    { field: "contact", headerName: "Hotel", flex: 1 },
-    { field: "hotmail", headerName: "Email", flex: 1 },
-    { field: "total", headerName: "Tổng nhân viên", flex: 1 },
-    {
-      field: "actions",
-      headerName: "Actions",
-      width: 150,
-      renderCell: () => (
-        <>
-          {/* Icon Sửa */}
-          <Edit aria-label="Sửa" onClick={() => handleEdit()}>
-            <Edit />
-          </Edit>
-
-          {/* Icon Xoá */}
-          <Delete aria-label="Xoá" onClick={() => handleDelete()}>
-            <Delete />
-          </Delete>
-        </>
-      ),
-    },
-  ];
-  const handleEdit = (id) => {
-    // Xử lý hành động chỉnh sửa cho hàng có ID tương ứng
-    console.log("Chỉnh sửa hàng với ID:", id);
-    // Thực hiện các thao tác cần thiết khi chỉnh sửa hàng
-  };
-  const handleDelete = (id) => {
-    // Xử lý hành động chỉnh sửa cho hàng có ID tương ứng
-    console.log("Chỉnh sửa hàng với ID:", id);
-    // Thực hiện các thao tác cần thiết khi chỉnh sửa hàng
-  };
-  const [apiData, setApiData] = useState([]);
+export default function Department() {
+  const [data, setData] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // Số lượng hàng hiển thị trên mỗi trang
 
   useEffect(() => {
-    // Fetch dữ liệu từ API khi component được tạo lần đầu tiên
+    // Gọi API để lấy dữ liệu
     axios
       .get("http://localhost:3002/departments/getAllDepartment")
       .then((response) => {
-        // Chỉnh sửa dữ liệu trước khi đưa vào DataGrid
-        const apiDataWithId = response.data.data.map((row) => {
-          return { ...row, id: row.departmentID }; // Sử dụng thuộc tính departmentID làm id của mỗi hàng
-        });
-        setApiData(apiDataWithId);
+        // Lưu trữ dữ liệu từ API vào state
+        setData(response.data);
       })
       .catch((error) => {
-        console.error("Lỗi khi tải dữ liệu từ API:", error);
+        // eslint-disable-next-line no-console
+        console.error("Error fetching data:", error);
       });
   }, []);
-
-  return (
-    <Box sx={{ height: 400, width: "100%" }}>
-      <DataGrid
-        rows={apiData}
-        columns={columns}
-        pageSize={5}
-        checkboxSelection
-      />
-    </Box>
-  );
-};
-
-export default function Department() {
+  const handleNameClick = (name) => {
+    alert(`You clicked on ${name}`);
+  };
+  // Tính toán số lượng trang
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  // Tính toán dữ liệu cho trang hiện tại
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
+  // Hàm xử lý khi người dùng thay đổi trang
+  const paginate = (pageNumber) => {
+    if (pageNumber >= 1 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
   return (
     <Box>
-      <Box>
-        <Button variant="outlined" startIcon={<AddIcon />}>
-          Thêm mới phòng ban
-        </Button>
-      </Box>
-      <Box>
-        <DataGridFromApi />
-      </Box>
+      <h1>Data Table</h1>
+      <table
+        style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}
+      >
+        <thead>
+          <tr>
+            <th style={tableHeaderStyle}>ID</th>
+            <th style={tableHeaderStyle}>Tên phòng</th>
+            <th style={tableHeaderStyle}>Trưởng phòng</th>
+            <th style={tableHeaderStyle}>Liên hệ</th>
+            <th style={tableHeaderStyle}>Email</th>
+            <th style={tableHeaderStyle}>Số lượng </th>
+            <th style={tableHeaderStyle}>Hành động</th>
+          </tr>
+        </thead>
+        <tbody>
+          {currentData.map((item) => (
+            <tr key={item.departmentID} style={tableRowStyle}>
+              <td style={tableCellStyle}>{item.departmentID}</td>
+              <td
+                style={tableCellStyle}
+                onClick={() => handleNameClick(item.departmentName)}
+              >
+                {item.departmentName}
+              </td>
+              <td style={tableCellStyle}>{item.departmentHead}</td>
+              <td style={tableCellStyle}>{item.contact}</td>
+              <td style={tableCellStyle}>{item.hotmail}</td>
+              <td style={tableCellStyle}>{item.total}</td>
+              <td style={tableCellStyle}>
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <Box>
+                    <IconButton aria-label="fingerprint" color="success">
+                      <EditIcon />
+                    </IconButton>
+                  </Box>
+                  <Box>
+                    <IconButton aria-label="fingerprint" color="success">
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                </Box>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* Phân trang */}
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          marginTop: "10px",
+          alignItems: "center",
+        }}
+      >
+        <IconButton
+          sx={{ "&:hover": { color: "green" } }}
+          disabled={currentPage === 1}
+          onClick={() => paginate(currentPage - 1)}
+        >
+          <SkipPreviousIcon titleAccess="Previous" />
+        </IconButton>
+        {Array.from({ length: totalPages }, (_, index) => (
+          <button
+            key={index}
+            onClick={() => paginate(index + 1)}
+            style={
+              currentPage === index + 1
+                ? activePaginationButtonStyle
+                : paginationButtonStyle
+            }
+          >
+            {index + 1}
+          </button>
+        ))}
+        <IconButton
+          sx={{ "&:hover": { color: "green" } }}
+          disabled={currentPage === totalPages}
+          onClick={() => paginate(currentPage + 1)}
+        >
+          <SkipNextIcon titleAccess="Next" />
+        </IconButton>
+      </div>
     </Box>
   );
 }
+
+// CSS cho tiêu đề cột
+const tableHeaderStyle = {
+  backgroundColor: "#1e7fff",
+  borderBottom: "1px solid #ddd",
+  padding: "8px",
+  textAlign: "left",
+  borderRight: "1px solid #ddd",
+  color: "white",
+};
+
+// CSS cho hàng
+const tableRowStyle = {
+  backgroundColor: "#ffffff",
+  borderBottom: "1px solid #ddd",
+};
+
+// CSS cho ô dữ liệu
+const tableCellStyle = {
+  padding: "8px",
+  textAlign: "left",
+  border: "1px solid #ddd", // Viền cho cột
+};
+const paginationButtonStyle = {
+  margin: "5px",
+  padding: "5px 10px",
+  cursor: "pointer",
+  borderRadius: "50%",
+  border: "none",
+};
+
+const activePaginationButtonStyle = {
+  margin: "5px",
+  padding: "5px 10px",
+  cursor: "pointer",
+  backgroundColor: "#1e7fff",
+  borderRadius: "50%",
+  color: "white",
+  border: "none",
+};
