@@ -50,7 +50,7 @@ const userSchema = new mongoose.Schema(
     },
     position: {
       type: String,
-      enum: ["staff", "mamager", "director"],
+      enum: ["staff", "mamager"],
       default: "staff",
     },
     password: {

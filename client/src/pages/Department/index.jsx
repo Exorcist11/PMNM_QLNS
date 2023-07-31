@@ -6,11 +6,36 @@ import SkipNextIcon from "@mui/icons-material/SkipNext";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import TextField from "@mui/material/TextField";
+import AddIcon from "@mui/icons-material/Add";
+import SearchIcon from "@mui/icons-material/Search";
+import DepartmentDialog from "~/components/Popup/departmentPop";
+import ErrorIcon from "@mui/icons-material/Error";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Department() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10; // Số lượng hàng hiển thị trên mỗi trang
+  const [searchKeyword, setSearchKeyword] = useState(""); // Lưu biến tìm kiếm
+
+  // Tính toán số lượng trang
+  const totalPages = Math.ceil(data.length / itemsPerPage);
+  // Tính toán dữ liệu cho trang hiện tại
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+
+  const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
+  const [error, setError] = useState(null);
+  const [dept, setDept] = useState({
+    departmentName: "",
+    description: "",
+    departmentHead: "",
+    contact: "",
+    hotmail: "",
+    total: "",
+  });
 
   useEffect(() => {
     // Gọi API để lấy dữ liệu
@@ -21,28 +46,326 @@ export default function Department() {
         setData(response.data);
       })
       .catch((error) => {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching data:", error);
+        throw ("Error fetching data:", error);
       });
   }, []);
+
   const handleNameClick = (name) => {
     alert(`You clicked on ${name}`);
   };
-  // Tính toán số lượng trang
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  // Tính toán dữ liệu cho trang hiện tại
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleSearch = (event) => {
+    const keyword = event.target.value;
+    setSearchKeyword(keyword);
+  };
+
+  const search = () => {
+    alert(searchKeyword);
+  };
   // Hàm xử lý khi người dùng thay đổi trang
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
     }
   };
+
+  const handleOnchange = (event) => {
+    const { name, value } = event.target;
+    setDept((preState) => ({
+      ...preState,
+      [name]: value,
+    }));
+  };
+
+  // Thêm
+  const dialogContent = {
+    title: "Thêm mới phòng ban",
+    actionSave: true,
+    nameBtn: "Save",
+    content: (
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          id="outlined-error"
+          label="Tên phòng ban"
+          onChange={handleOnchange}
+          fullWidth
+          name="departmentName"
+        />
+        <TextField
+          id="outlined-error"
+          label="Trưởng phòng"
+          onChange={handleOnchange}
+          fullWidth
+          name="departmentHead"
+        />
+        <TextField
+          id="outlined-error"
+          label="Hotmail"
+          onChange={handleOnchange}
+          fullWidth
+          name="hotmail"
+        />
+        <TextField
+          id="outlined-error"
+          label="Hotel"
+          onChange={handleOnchange}
+          fullWidth
+          name="contact"
+        />
+        <TextField
+          id="outlined-error"
+          label="Số lượng nhân viên"
+          onChange={handleOnchange}
+          fullWidth
+          name="total"
+        />
+        <TextField
+          id="outlined-error"
+          label="Mô tả"
+          onChange={handleOnchange}
+          fullWidth
+          name="description"
+          helperText={error ? error : ""}
+        />
+      </Box>
+    ),
+  };
+  const handleSave = () => {
+    axios
+      .post("http://localhost:3002/departments/createNewDepartment", dept)
+      .then((response) => {
+        // If the new department is successfully created, update the table
+        setData((prevData) => [...prevData, response.data.data]);
+        toast.success("Đã lưu phòng ban thành công!", {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+
+        setDept({
+          departmentName: "",
+          description: "",
+          departmentHead: "",
+          contact: "",
+          hotmail: "",
+          total: "",
+        });
+      })
+      .catch((error) => {
+        setError(error.response.data.errMsg);
+        toast.error("Lỗi: " + error.response.data.errMsg, {
+          position: "bottom-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "colored",
+        });
+
+        throw ("Lỗi khi thêm mới:", error.response.data.errMsg);
+      });
+  };
+
+  const handleCancel = () => {
+    setDept({
+      departmentName: "",
+      description: "",
+      departmentHead: "",
+      contact: "",
+      hotmail: "",
+      total: "",
+    });
+  };
+
+  // Xoá
+  const dialogContentDel = {
+    title: "Xoá phòng ban",
+    actionSave: true,
+    nameBtn: "Xác nhận",
+    content: (
+      <Box sx={{ display: "flex", gap: 2 }}>
+        <ErrorIcon color="error" />
+        Dữ liệu sau khi xoá không thể khôi phục. Bạn chắc chứ!
+      </Box>
+    ),
+  };
+  const handleDelete = (departmentID) => {
+    axios
+      .delete(`http://localhost:3002/departments/${departmentID}`)
+      .then(() => {
+        // If the employee is successfully deleted, update the table by removing the employee from the data state
+        setData((prevData) =>
+          prevData.filter((item) => item.departmentID !== departmentID)
+        );
+
+        // Show success toast
+        toast.success("Phòng ban đã được xoá thành công!", {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      })
+      .catch((error) => {
+        // Show error toast
+        toast.error("Có lỗi xảy ra khi xoá phòng ban. Vui lòng thử lại sau!", {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+
+        throw ("Lỗi khi xoá phòng ban:", error);
+      });
+  };
+
+  // Sửa
+
+  const dialogContentUpdate = {
+    title: "Cập nhật phòng ban",
+    actionSave: true,
+    nameBtn: "Cập nhật",
+    content: (
+      <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <TextField
+          id="outlined-error"
+          label="Tên phòng ban"
+          onChange={handleOnchange}
+          fullWidth
+          name="departmentName"
+          value={dept.departmentName}
+        />
+        <TextField
+          id="outlined-error"
+          label="Trưởng phòng"
+          onChange={handleOnchange}
+          fullWidth
+          name="departmentHead"
+          value={dept.departmentHead}
+        />
+        <TextField
+          id="outlined-error"
+          label="Hotmail"
+          onChange={handleOnchange}
+          fullWidth
+          name="hotmail"
+          value={dept.hotmail}
+        />
+        <TextField
+          id="outlined-error"
+          label="Hotel"
+          onChange={handleOnchange}
+          fullWidth
+          name="contact"
+          value={dept.contact}
+        />
+        <TextField
+          id="outlined-error"
+          label="Số lượng nhân viên"
+          onChange={handleOnchange}
+          fullWidth
+          name="total"
+          value={dept.total}
+        />
+        <TextField
+          id="outlined-error"
+          label="Mô tả"
+          onChange={handleOnchange}
+          fullWidth
+          name="description"
+          value={dept.description}
+          helperText={error ? error : ""}
+        />
+      </Box>
+    ),
+  };
+  const handleUpdate = (departmentID) => {
+    axios
+      .put(`http://localhost:3002/departments/${departmentID}`, dept)
+      .then((response) => {
+        // If the department is successfully updated, update the table by finding the updated department in the data state and replacing it
+        setData((prevData) =>
+          prevData.map((item) =>
+            item.departmentID === departmentID ? response.data.data : item
+          )
+        );
+
+        // Show success toast
+        toast.success("Phòng ban đã được cập nhật thành công!", {
+          position: "bottom-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+      })
+      .catch((error) => {
+        // Show error toast
+        toast.error(
+          "Có lỗi xảy ra khi cập nhật phòng ban. Vui lòng thử lại sau!",
+          {
+            position: "bottom-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          }
+        );
+
+        throw ("Lỗi khi cập nhật phòng ban:", error);
+      });
+  };
+
   return (
     <Box>
-      <h1>Data Table</h1>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "flex-end",
+          gap: 2,
+        }}
+      >
+        <DepartmentDialog
+          dialogContent={dialogContent} // Truyền nội dung vào DepartmentDialog
+          buttonText={"Thêm mới"}
+          icon={<AddIcon />}
+          varI={"outlined"}
+          mWidth={"lg"}
+          onSave={handleSave}
+          onCancel={handleCancel}
+        />
+        <Box sx={{ display: "flex", alignItems: "flex-end" }}>
+          <SearchIcon
+            sx={{ color: "action.active", mr: 1, my: 0.5 }}
+            onClick={search}
+          />
+          <TextField
+            id="input-with-sx"
+            label="Tìm kiếm"
+            variant="standard"
+            onChange={handleSearch}
+          />
+        </Box>
+      </Box>
+      {/* Hiển thị dữ liệu */}
       <table
         style={{ width: "100%", borderCollapse: "collapse", marginTop: "20px" }}
       >
@@ -72,16 +395,28 @@ export default function Department() {
               <td style={tableCellStyle}>{item.hotmail}</td>
               <td style={tableCellStyle}>{item.total}</td>
               <td style={tableCellStyle}>
-                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Box sx={{ display: "flex", justifyContent: "center", gap: 1 }}>
                   <Box>
-                    <IconButton aria-label="fingerprint" color="success">
-                      <EditIcon />
-                    </IconButton>
+                    <DepartmentDialog
+                      dialogContent={dialogContentUpdate}
+                      icon={<EditIcon />}
+                      onSave={() => handleUpdate(item.departmentID)}
+                      onCancel={handleCancel}
+                      buttonText={"sửa"}
+                      varI={"contained"}
+                      color="success"
+                    />
                   </Box>
                   <Box>
-                    <IconButton aria-label="fingerprint" color="success">
-                      <DeleteIcon />
-                    </IconButton>
+                    <DepartmentDialog
+                      dialogContent={dialogContentDel} // Truyền nội dung vào DepartmentDialog
+                      icon={<DeleteIcon />}
+                      onSave={() => handleDelete(item.departmentID)}
+                      onCancel={handleCancel}
+                      buttonText={"xoá"}
+                      varI={"contained"}
+                      color="primary"
+                    />
                   </Box>
                 </Box>
               </td>
