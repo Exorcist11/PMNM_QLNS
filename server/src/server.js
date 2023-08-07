@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import viewEngine from "./configs/viewEngine";
 import initWebRoutes from "./routes/web";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 require("dotenv").config();
 
 const app = express();
@@ -13,6 +14,7 @@ const connectDB = require("./configs/connectDB");
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true, limit: "30mb" }));
 app.use(cors());
+app.use(cookieParser());
 
 viewEngine(app);
 initWebRoutes(app);

@@ -1,19 +1,19 @@
-import { Department, DepartmentCounter } from "../models/department";
+import { Department } from "../models/department";
 
 // Lấy toàn bộ dữ liệu từ collection Department
 export const getAllDepartment = async (req, res) => {
   try {
     const departments = await Department.find();
     if (!departments) {
-      res.status(404).json({
+      return res.status(404).json({
         errCode: 2,
         errorMsg: "404 Not Found!",
       });
     } else {
-      res.status(200).json(departments);
+      return res.status(200).json(departments);
     }
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       errCode: -1,
       errMsg: "Connection error from the server: " + error,
     });
@@ -59,13 +59,13 @@ export const createNewDepartment = async (req, res) => {
     // Lưu phòng ban vào cơ sở dữ liệu
     const savedDepartment = await newDepartment.save();
 
-    res.status(201).json({
+    return res.status(201).json({
       errCode: 0,
       errMsg: "added department data successfully",
       data: savedDepartment,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       errCode: -1,
       errMsg: "Connection error from the server: " + error,
     });
@@ -80,7 +80,7 @@ export const updateDepartment = async (req, res) => {
     // Tìm kiếm và kiểm tra xem deparmentID có tồn tại hay không
     const department = await Department.findOne({ departmentID });
     if (!department) {
-      res.status(404).json({
+      return res.status(404).json({
         errCode: 2,
         errMsg: "Department not found!",
       });
@@ -106,13 +106,13 @@ export const updateDepartment = async (req, res) => {
     // Lưu dữ liệu
     await department.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       errCode: 0,
       errMsg: "Data update department successfully!",
       data: department,
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       errCode: -1,
       errMsg: "Connection error from the server: " + error,
     });
@@ -129,18 +129,18 @@ export const deleteDepartment = async (req, res) => {
       departmentID,
     });
     if (!deleteDepartment) {
-      res.status(404).json({
+      return res.status(404).json({
         errCode: 2,
         errMsg: "Department not found!",
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       errCode: 0,
       errMsg: "Delete department successfully!",
     });
   } catch (error) {
-    res.status(500).json({
+    return res.status(500).json({
       errCode: -1,
       errMsg: "Connection error from the server: " + error,
     });

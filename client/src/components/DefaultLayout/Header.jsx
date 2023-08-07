@@ -11,7 +11,6 @@ import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import Divider from "@mui/material/Divider";
-import PersonAdd from "@mui/icons-material/PersonAdd";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import ScoreIcon from "@mui/icons-material/Score";
@@ -25,6 +24,9 @@ export default function Header() {
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const handleLogout = () => {
+    
+  }
   return (
     <AppBar position="static" sx={{ padding: "0 30px" }}>
       <Container maxWidth="xl">
@@ -112,12 +114,7 @@ export default function Header() {
               <Avatar /> My account
             </MenuItem>
             <Divider />
-            <MenuItem onClick={handleClose}>
-              <ListItemIcon>
-                <PersonAdd fontSize="small" />
-              </ListItemIcon>
-              Add another account
-            </MenuItem>
+            
             <MenuItem onClick={handleClose}>
               <ListItemIcon>
                 <Settings fontSize="small" />

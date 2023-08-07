@@ -1,6 +1,4 @@
 import mongoose, { Schema } from "mongoose";
-import bcrypt from "brcypt";
-import jwt from "jsonwebtoken";
 
 const userSchema = new mongoose.Schema(
   {
@@ -39,7 +37,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     department: {
-      type: Schema.Types.ObjectId,
+      type: String,
       ref: "Department",
     },
     email: {
@@ -50,7 +48,7 @@ const userSchema = new mongoose.Schema(
     },
     position: {
       type: String,
-      enum: ["staff", "mamager"],
+      enum: ["staff", "manager"],
       default: "staff",
     },
     password: {
@@ -81,35 +79,9 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-//Sử dụng bcrypt mã hoá mật khẩu
-userSchema.pre("save", async function (next) {
-  const user = this;
-  if (!user.isModified("password")) return next();
-  try {
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(user.password, salt);
-    user.password = hash;
-    next();
-  } catch (err) {
-    return next(err);
-  }
-});
-
-//Kiểm tra mật khẩu có khớp với mật khẩu đã được mã hoá hay không
-userSchema.methods.isPasswordMatch = async function (password) {
-  const user = this;
-  return await bcrypt.compare(password, user.password);
-};
-
-//Xác nhận danh tính
-userSchema.methods.signToken = async function () {
-  const token = jwt.sign({ email: this.email }, process.env.PRIVATE_KEY, {
-    expiresIn: process.env.TOKEN_EXPIRE || "23h",
-  });
-};
 //Kiểm tra email tồn tại
-userSchema.statics.isEmailExited = async function (email) {
-  const email = await this.findOne({ email });
+userSchema.statics.isEmailExisted = async function (checkEmail) {
+  const email = await this.findOne({ email: checkEmail });
   return !!email;
 };
 

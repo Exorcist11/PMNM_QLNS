@@ -130,6 +130,7 @@ export default function Department() {
       </Box>
     ),
   };
+
   const handleSave = () => {
     axios
       .post("http://localhost:3002/departments/createNewDepartment", dept)
@@ -381,9 +382,9 @@ export default function Department() {
           </tr>
         </thead>
         <tbody>
-          {currentData.map((item) => (
+          {currentData.map((item, index) => (
             <tr key={item.departmentID} style={tableRowStyle}>
-              <td style={tableCellStyle}>{item.departmentID}</td>
+              <td style={tableCellStyle}>{index + 1}</td>
               <td
                 style={tableCellStyle}
                 onClick={() => handleNameClick(item.departmentName)}
