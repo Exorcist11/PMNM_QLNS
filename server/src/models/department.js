@@ -49,7 +49,7 @@ const departmentSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    users: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    users: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
@@ -73,5 +73,8 @@ departmentSchema.pre("save", async function (next) {
   }
 });
 
+departmentSchema.virtual("userCount").get(function () {
+  return this.users.length;
+});
 // Tạo model Department sử dụng departmentSchema
 export const Department = mongoose.model("Department", departmentSchema);

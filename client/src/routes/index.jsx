@@ -4,6 +4,7 @@ import ManageStaff from "~/pages/ManageStaff";
 import InformationStaff from "~/pages/InfomationSalary";
 import Report from "~/pages/Report";
 import Login from "~/pages/Auth";
+import EmployeeList from "~/pages/EmpByDept";
 
 const publicRoute = [
   { path: "/login", component: Login, layout: null },
@@ -12,6 +13,7 @@ const publicRoute = [
   { path: "/staff-manage", component: ManageStaff },
   { path: "/infomation-staff", component: InformationStaff },
   { path: "/report", component: Report },
+  { path: "/emp-list", component: EmployeeList },
 ];
 
 export { publicRoute };

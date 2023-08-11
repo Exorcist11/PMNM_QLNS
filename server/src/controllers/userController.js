@@ -1,6 +1,8 @@
 import { User } from "../models/user";
+import { Department } from "../models/department";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { Role } from "../models/role";
 
 const generateEmployeeID = () => {
   const min = 100000;
@@ -9,7 +11,23 @@ const generateEmployeeID = () => {
 };
 
 export const getAllStaff = async (req, res) => {
-  res.send("DMC");
+  try {
+    const user = await User.find().populate("department");
+
+    if (!user) {
+      return res.status(404).json({
+        errCode: 2,
+        errorMsg: "404 Not Found!",
+      });
+    } else {
+      return res.status(200).json(user);
+    }
+  } catch (error) {
+    return res.status(500).json({
+      errCode: -1,
+      errMsg: "Connection error from server: " + error,
+    });
+  }
 };
 
 export const loginUser = async (req, res) => {
@@ -58,16 +76,14 @@ export const creatStaff = async (req, res) => {
     const {
       firstName,
       lastName,
-      gender,
       dateOfBirth,
       address,
       phoneNumber,
-      department,
+      departmentID,
       email,
-      position,
+      roleID,
       password,
       salary,
-      identification,
       startDate,
       contractSignDate,
       contractEndDate,
@@ -80,23 +96,22 @@ export const creatStaff = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
+    const department = await Department.findById(departmentID);
 
     if (
       !firstName ||
       !lastName ||
-      !gender ||
       !dateOfBirth ||
       !address ||
       !phoneNumber ||
-      !department ||
+      !departmentID ||
       !email ||
-      !position ||
       !password ||
       !salary ||
-      !identification ||
       !startDate ||
       !contractSignDate ||
-      !contractEndDate
+      !contractEndDate ||
+      !roleID
     ) {
       return res.status(400).json({
         errCode: 1,
@@ -109,37 +124,82 @@ export const creatStaff = async (req, res) => {
     while (await User.exists({ employeeID: newEmployeeID })) {
       newEmployeeID = generateEmployeeID();
     }
+
+    if (department.userCount > department.total) {
+      return res.status(400).json({
+        errCode: 2,
+        errMsg: "More than the number of employees allowed",
+      });
+    }
+
     const newEmployee = new User({
       employeeID: newEmployeeID,
       firstName,
       lastName,
-      gender,
       dateOfBirth,
       address,
       phoneNumber,
-      department,
+      department: departmentID,
       email,
-      position,
+      position: roleID,
       password: hashed,
       salary,
-      identification,
       startDate,
       contractSignDate,
       contractEndDate,
     });
 
+    const savedEmp = await newEmployee.save();
+    const updateDepartment = await Department.findByIdAndUpdate(
+      departmentID,
+      { $push: { users: savedEmp._id } },
+      { new: true }
+    );
+    const updateRole = await Role.findByIdAndUpdate(
+      roleID,
+      { $push: { users: savedEmp._id } },
+      { new: true }
+    );
+
     // Lưu nhân viên mới vào database
-    await newEmployee.save();
 
     return res.status(201).json({
       errCode: 0,
       errMsg: "Add Employee data successfully",
-      data: newEmployee,
+      emp: savedEmp,
+      dept: updateDepartment,
+      role: updateRole,
     });
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
       errMsg: "Connection error from server: " + error,
     });
+  }
+};
+
+export const deleteEmployess = async (req, res) => {
+  try {
+    const employeeId = req.params.employeeID;
+
+    // Tìm thông tin nhân viên để lấy departmentId
+    const employee = await User.findById(employeeId);
+
+    if (!employee) {
+      return res.status(404).json({ error: "Nhân viên không tồn tại." });
+    }
+
+    // Xoá nhân viên khỏi bảng users
+    await User.findByIdAndRemove(employeeId);
+
+    // Xoá nhân viên khỏi danh sách nhân viên của department
+    await Department.findByIdAndUpdate(employee.department, {
+      $pull: { users: employeeId },
+    });
+
+    res.status(200).json({ message: "Xoá nhân viên thành công." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Lỗi khi xoá nhân viên." });
   }
 };

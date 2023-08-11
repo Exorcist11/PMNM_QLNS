@@ -7,6 +7,7 @@ import axios from "axios";
 
 export default function Login() {
   const navigate = useNavigate();
+
   const [reg, setReg] = useState({
     email: "",
     password: "",
@@ -27,6 +28,8 @@ export default function Login() {
     axios
       .post("http://localhost:3002/manage-staff/login", reg)
       .then((response) => {
+        const user = JSON.stringify(response.data.data);
+        localStorage.setItem("account", user);
         navigate("/");
       })
       .catch((error) => {

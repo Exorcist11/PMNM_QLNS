@@ -12,5 +12,6 @@ router.get(
 router.post("/createNewDepartment", departmentController.createNewDepartment);
 router.put("/:departmentID", departmentController.updateDepartment);
 router.delete("/:departmentID", departmentController.deleteDepartment);
+router.get("/:id", departmentController.getDepartmentByID);
 
 export default router;

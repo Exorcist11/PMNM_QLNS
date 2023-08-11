@@ -14,7 +14,13 @@ export default function Navbar() {
   const location = useLocation();
 
   // Define the routes and their corresponding index for the Tabs
-  const routes = ["/", "/staff-manage", "/department", "/infomation-staff", "/report"];
+  const routes = [
+    "/",
+    "/staff-manage",
+    "/department",
+    "/infomation-staff",
+    "/report",
+  ];
   const currentRouteIndex = routes.indexOf(location.pathname);
 
   // Set the state value to the currentRouteIndex
@@ -40,11 +46,41 @@ export default function Navbar() {
           aria-label="Vertical tabs example"
           sx={{ borderRight: 1, borderColor: "divider", height: "100vh" }}
         >
-          <Tab label="Trang chủ" component={Link} to={"/"} icon={<HomeIcon />} iconPosition="start" />
-          <Tab label="Quản lý nhân viên" component={Link} to={"/staff-manage"} icon={<PersonIcon />} iconPosition="start" />
-          <Tab label="Quản lý phòng ban" component={Link} to={"/department"} icon={<GroupsIcon />} iconPosition="start" />
-          <Tab label="Thông tin cá nhân" component={Link} to={"/infomation-staff"} icon={<InfoIcon />} iconPosition="start" />
-          <Tab label="Thống kê" component={Link} to={"/report"} icon={<BarChartIcon />} iconPosition="start" />
+          <Tab
+            label="Trang chủ"
+            component={Link}
+            to={"/"}
+            icon={<HomeIcon />}
+            iconPosition="start"
+          />
+          <Tab
+            label="Quản lý nhân viên"
+            component={Link}
+            to={"/staff-manage"}
+            icon={<PersonIcon />}
+            iconPosition="start"
+          />
+          <Tab
+            label="Quản lý phòng ban"
+            component={Link}
+            to={"/department"}
+            icon={<GroupsIcon />}
+            iconPosition="start"
+          />
+          <Tab
+            label="Thông tin cá nhân"
+            component={Link}
+            to={"/infomation-staff"}
+            icon={<InfoIcon />}
+            iconPosition="start"
+          />
+          <Tab
+            label="Thống kê"
+            component={Link}
+            to={"/report"}
+            icon={<BarChartIcon />}
+            iconPosition="start"
+          />
         </Tabs>
       </Box>
     </Box>

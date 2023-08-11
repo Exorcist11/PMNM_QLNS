@@ -14,6 +14,7 @@ import Divider from "@mui/material/Divider";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import ScoreIcon from "@mui/icons-material/Score";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -21,12 +22,16 @@ export default function Header() {
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+  const navigate = useNavigate();
   const handleClose = () => {
     setAnchorEl(null);
   };
   const handleLogout = () => {
-    
-  }
+    navigate("/login");
+    localStorage.clear();
+  };
+  const account = JSON.parse(localStorage.getItem("account"));
+  
   return (
     <AppBar position="static" sx={{ padding: "0 30px" }}>
       <Container maxWidth="xl">
@@ -111,21 +116,21 @@ export default function Header() {
               <Avatar /> Profile
             </MenuItem>
             <MenuItem onClick={handleClose}>
-              <Avatar /> My account
+              <Avatar /> {account.firstName}
             </MenuItem>
             <Divider />
-            
+
             <MenuItem onClick={handleClose}>
               <ListItemIcon>
                 <Settings fontSize="small" />
               </ListItemIcon>
-              Settings
+              Cài đặt
             </MenuItem>
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleLogout}>
               <ListItemIcon>
                 <Logout fontSize="small" />
               </ListItemIcon>
-              Logout
+              Đăng xuất
             </MenuItem>
           </Menu>
         </Toolbar>

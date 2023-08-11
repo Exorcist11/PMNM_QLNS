@@ -13,6 +13,7 @@ import DepartmentDialog from "~/components/Popup/departmentPop";
 import ErrorIcon from "@mui/icons-material/Error";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Department() {
   const [data, setData] = useState([]);
@@ -50,8 +51,10 @@ export default function Department() {
       });
   }, []);
 
-  const handleNameClick = (name) => {
-    alert(`You clicked on ${name}`);
+  const navigate = useNavigate();
+  const handleNameClick = (id) => {
+    localStorage.setItem("deptID", id);
+    navigate("/emp-list");
   };
 
   const handleSearch = (event) => {
@@ -90,13 +93,6 @@ export default function Department() {
           onChange={handleOnchange}
           fullWidth
           name="departmentName"
-        />
-        <TextField
-          id="outlined-error"
-          label="Trưởng phòng"
-          onChange={handleOnchange}
-          fullWidth
-          name="departmentHead"
         />
         <TextField
           id="outlined-error"
@@ -151,7 +147,6 @@ export default function Department() {
         setDept({
           departmentName: "",
           description: "",
-          departmentHead: "",
           contact: "",
           hotmail: "",
           total: "",
@@ -178,7 +173,6 @@ export default function Department() {
     setDept({
       departmentName: "",
       description: "",
-      departmentHead: "",
       contact: "",
       hotmail: "",
       total: "",
@@ -249,14 +243,7 @@ export default function Department() {
           name="departmentName"
           value={dept.departmentName}
         />
-        <TextField
-          id="outlined-error"
-          label="Trưởng phòng"
-          onChange={handleOnchange}
-          fullWidth
-          name="departmentHead"
-          value={dept.departmentHead}
-        />
+
         <TextField
           id="outlined-error"
           label="Hotmail"
@@ -374,7 +361,7 @@ export default function Department() {
           <tr>
             <th style={tableHeaderStyle}>ID</th>
             <th style={tableHeaderStyle}>Tên phòng</th>
-            <th style={tableHeaderStyle}>Trưởng phòng</th>
+
             <th style={tableHeaderStyle}>Liên hệ</th>
             <th style={tableHeaderStyle}>Email</th>
             <th style={tableHeaderStyle}>Số lượng </th>
@@ -387,11 +374,11 @@ export default function Department() {
               <td style={tableCellStyle}>{index + 1}</td>
               <td
                 style={tableCellStyle}
-                onClick={() => handleNameClick(item.departmentName)}
+                onClick={() => handleNameClick(item._id)}
               >
                 {item.departmentName}
               </td>
-              <td style={tableCellStyle}>{item.departmentHead}</td>
+
               <td style={tableCellStyle}>{item.contact}</td>
               <td style={tableCellStyle}>{item.hotmail}</td>
               <td style={tableCellStyle}>{item.total}</td>
@@ -466,7 +453,6 @@ export default function Department() {
     </Box>
   );
 }
-
 // CSS cho tiêu đề cột
 const tableHeaderStyle = {
   backgroundColor: "#1e7fff",
@@ -481,6 +467,7 @@ const tableHeaderStyle = {
 const tableRowStyle = {
   backgroundColor: "#ffffff",
   borderBottom: "1px solid #ddd",
+  cursor: "pointer",
 };
 
 // CSS cho ô dữ liệu

@@ -17,14 +17,13 @@ const userSchema = new mongoose.Schema(
       require: [true, "Require last name"],
       trim: true,
     },
-    gender: {
-      type: Boolean,
-      require: true,
-    },
     dateOfBirth: {
       type: Date,
       require: [true, "Require date of birth"],
       trim: true,
+    },
+    avatar: {
+      type: String,
     },
     address: {
       type: String,
@@ -37,7 +36,7 @@ const userSchema = new mongoose.Schema(
       trim: true,
     },
     department: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "Department",
     },
     email: {
@@ -47,9 +46,8 @@ const userSchema = new mongoose.Schema(
       unique: true,
     },
     position: {
-      type: String,
-      enum: ["staff", "manager"],
-      default: "staff",
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Role",
     },
     password: {
       type: String,
@@ -58,10 +56,6 @@ const userSchema = new mongoose.Schema(
     salary: {
       type: Number,
       require: [true, "Require salary"],
-    },
-    identification: {
-      type: Number,
-      require: [true, "Require identification"],
     },
     startDate: {
       type: Date,
