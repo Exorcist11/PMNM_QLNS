@@ -5,9 +5,9 @@ import { Role } from "../models/role";
 export const createNewRole = async (req, res) => {
   try {
     // Lấy dữ liệu từ client
-    const { roleName } = req.body;
+    const { roleName, wage } = req.body;
     // Kiểm tra dữ liệu nhập
-    if (!roleName) {
+    if (!roleName || !wage) {
       return res.status(400).json({
         errCode: 1,
         errMsg: "Please enter all required information.",
@@ -16,6 +16,7 @@ export const createNewRole = async (req, res) => {
     // Tạo một đối tượng phòng ban mới
     const newRole = new Role({
       roleName,
+      wage,
     });
 
     // Lưu phòng ban vào cơ sở dữ liệu

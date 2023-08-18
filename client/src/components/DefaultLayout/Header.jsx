@@ -10,7 +10,6 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import Divider from "@mui/material/Divider";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
 import ScoreIcon from "@mui/icons-material/Score";
@@ -31,7 +30,7 @@ export default function Header() {
     localStorage.clear();
   };
   const account = JSON.parse(localStorage.getItem("account"));
-  
+
   return (
     <AppBar position="static" sx={{ padding: "0 30px" }}>
       <Container maxWidth="xl">
@@ -64,6 +63,7 @@ export default function Header() {
           </Box>
 
           <Box sx={{ flexGrow: 0 }}>
+            {"Xin chào " + account.firstName + " " + account.lastName}
             <Tooltip title="Account settings">
               <IconButton
                 onClick={handleClick}
@@ -73,7 +73,9 @@ export default function Header() {
                 aria-haspopup="true"
                 aria-expanded={open ? "true" : undefined}
               >
-                <Avatar sx={{ width: 32, height: 32 }}>M</Avatar>
+                <Avatar sx={{ width: 32, height: 32 }}>
+                  {account.lastName[0]}
+                </Avatar>
               </IconButton>
             </Tooltip>
           </Box>
@@ -113,18 +115,10 @@ export default function Header() {
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
             <MenuItem onClick={handleClose}>
-              <Avatar /> Profile
-            </MenuItem>
-            <MenuItem onClick={handleClose}>
-              <Avatar /> {account.firstName}
-            </MenuItem>
-            <Divider />
-
-            <MenuItem onClick={handleClose}>
               <ListItemIcon>
                 <Settings fontSize="small" />
               </ListItemIcon>
-              Cài đặt
+              Đổi mật khẩu
             </MenuItem>
             <MenuItem onClick={handleLogout}>
               <ListItemIcon>

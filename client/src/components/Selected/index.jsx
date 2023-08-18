@@ -15,6 +15,7 @@ export default function SelectSmall(props) {
       onChangeVar(event.target.value);
     }
   };
+  
   React.useEffect(() => {
     fetch(apiURL)
       .then((response) => response.json())

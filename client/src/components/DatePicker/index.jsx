@@ -2,8 +2,8 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 
-export default function FirstComponent(props) {
-  const { label, datePick } = props;
+export default function DatePick(props) {
+  const { label, datePick, value, variant } = props;
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -11,6 +11,8 @@ export default function FirstComponent(props) {
         label={label}
         sx={{ width: "373.06px" }}
         onChange={datePick}
+        value={value}
+        slotProps={{ textField: { variant: variant } }}
       />
     </LocalizationProvider>
   );

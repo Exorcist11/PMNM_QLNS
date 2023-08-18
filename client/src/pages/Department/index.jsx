@@ -14,6 +14,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
+// import Paging from "~/components/Paging";
 
 export default function Department() {
   const [data, setData] = useState([]);
@@ -37,7 +38,7 @@ export default function Department() {
     hotmail: "",
     total: "",
   });
-
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
   useEffect(() => {
     // Gọi API để lấy dữ liệu
     axios
@@ -76,6 +77,10 @@ export default function Department() {
     const { name, value } = event.target;
     setDept((preState) => ({
       ...preState,
+      [name]: value,
+    }));
+    setSelectedDepartment((prevState) => ({
+      ...prevState,
       [name]: value,
     }));
   };
@@ -228,7 +233,6 @@ export default function Department() {
   };
 
   // Sửa
-
   const dialogContentUpdate = {
     title: "Cập nhật phòng ban",
     actionSave: true,
@@ -241,7 +245,7 @@ export default function Department() {
           onChange={handleOnchange}
           fullWidth
           name="departmentName"
-          value={dept.departmentName}
+          value={selectedDepartment?.departmentName || ""}
         />
 
         <TextField
@@ -250,7 +254,7 @@ export default function Department() {
           onChange={handleOnchange}
           fullWidth
           name="hotmail"
-          value={dept.hotmail}
+          value={selectedDepartment?.hotmail || ""}
         />
         <TextField
           id="outlined-error"
@@ -258,7 +262,7 @@ export default function Department() {
           onChange={handleOnchange}
           fullWidth
           name="contact"
-          value={dept.contact}
+          value={selectedDepartment?.contact || ""}
         />
         <TextField
           id="outlined-error"
@@ -266,7 +270,7 @@ export default function Department() {
           onChange={handleOnchange}
           fullWidth
           name="total"
-          value={dept.total}
+          value={selectedDepartment?.total || ""}
         />
         <TextField
           id="outlined-error"
@@ -274,15 +278,34 @@ export default function Department() {
           onChange={handleOnchange}
           fullWidth
           name="description"
-          value={dept.description}
+          value={selectedDepartment?.description || ""}
           helperText={error ? error : ""}
         />
       </Box>
     ),
   };
-  const handleUpdate = (departmentID) => {
+
+  const handleSelectDeptByID = (id) => {
     axios
-      .put(`http://localhost:3002/departments/${departmentID}`, dept)
+      .get(`http://localhost:3002/departments/${id}`)
+      .then((response) => {
+        setSelectedDepartment(response.data.listEmp);
+      })
+      .catch((error) => {
+        throw ("Lỗi khi cập nhật phòng ban:", error);
+      });
+  };
+
+  const handleUpdate = (departmentID) => {
+    const updatedData = {
+      departmentName: selectedDepartment.departmentName,
+      hotmail: selectedDepartment.hotmail,
+      contact: selectedDepartment.contact,
+      total: selectedDepartment.total,
+      description: selectedDepartment.description,
+    };
+    axios
+      .put(`http://localhost:3002/departments/${departmentID}`, updatedData)
       .then((response) => {
         // If the department is successfully updated, update the table by finding the updated department in the data state and replacing it
         setData((prevData) =>
@@ -290,7 +313,6 @@ export default function Department() {
             item.departmentID === departmentID ? response.data.data : item
           )
         );
-
         // Show success toast
         toast.success("Phòng ban đã được cập nhật thành công!", {
           position: "bottom-right",
@@ -301,6 +323,7 @@ export default function Department() {
           draggable: true,
           progress: undefined,
         });
+        window.location.reload();
       })
       .catch((error) => {
         // Show error toast
@@ -361,7 +384,6 @@ export default function Department() {
           <tr>
             <th style={tableHeaderStyle}>ID</th>
             <th style={tableHeaderStyle}>Tên phòng</th>
-
             <th style={tableHeaderStyle}>Liên hệ</th>
             <th style={tableHeaderStyle}>Email</th>
             <th style={tableHeaderStyle}>Số lượng </th>
@@ -388,11 +410,12 @@ export default function Department() {
                     <DepartmentDialog
                       dialogContent={dialogContentUpdate}
                       icon={<EditIcon />}
-                      onSave={() => handleUpdate(item.departmentID)}
+                      onSave={() => handleUpdate(item._id)}
                       onCancel={handleCancel}
                       buttonText={"sửa"}
                       varI={"contained"}
                       color="success"
+                      selectID={() => handleSelectDeptByID(item._id)}
                     />
                   </Box>
                   <Box>
@@ -450,6 +473,7 @@ export default function Department() {
           <SkipNextIcon titleAccess="Next" />
         </IconButton>
       </div>
+      {/* <Paging data={data} itemsPerPage={10} /> */}
     </Box>
   );
 }

@@ -59,6 +59,7 @@ const DepartmentDialog = (props) => {
     icon,
     color,
     mWidth,
+    selectID,
   } = props;
 
   const handleClickOpen = () => {
@@ -73,7 +74,10 @@ const DepartmentDialog = (props) => {
     <Box>
       <Button
         variant={varI}
-        onClick={handleClickOpen}
+        onClick={() => {
+          handleClickOpen();
+          selectID();
+        }}
         startIcon={icon}
         color={color}
       >

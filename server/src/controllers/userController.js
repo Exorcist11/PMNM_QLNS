@@ -32,7 +32,16 @@ export const getAllStaff = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const email = await User.findOne({ email: req.body.email });
+    const email = await User.findOne({ email: req.body.email })
+      .populate({
+        path: "position",
+        select: "roleName wage",
+      })
+      .populate({
+        path: "department",
+        select: "departmentName",
+      });
+
     if (!email) {
       return res.status(404).json({
         errCode: 2,
@@ -199,7 +208,42 @@ export const deleteEmployess = async (req, res) => {
 
     res.status(200).json({ message: "Xoá nhân viên thành công." });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: "Lỗi khi xoá nhân viên." });
+    res.status(500).json({ error: "Lỗi khi xoá nhân viên" });
+  }
+};
+
+export const getEmpByID = async (req, res) => {
+  const { empID } = req.params;
+  try {
+    const employee = await User.findById(empID)
+      .populate({ path: "position", select: "roleName" })
+      .populate({ path: "department", select: "departmentName" })
+      .exec();
+
+    return res.status(200).json(employee);
+  } catch (error) {
+    res.status(500).json({ error: "Lỗi khi lấy thông tin nhân viên" });
+  }
+};
+
+export const updateEmp = async (req, res) => {
+  try {
+    const { empID } = req.params;
+    const updatedEmp = req.body; // Dữ liệu mới từ request body
+    const updated = await User.findByIdAndUpdate(empID, updatedEmp, {
+      new: true,
+    });
+
+    if (!updated) {
+      return res.status(404).json({ error: "Employee not found" });
+    }
+
+    return res.json({
+      data: updated,
+      errMsg: "Success",
+    });
+  } catch (error) {
+    console.error("Error updating department:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

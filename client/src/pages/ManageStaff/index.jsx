@@ -1,18 +1,19 @@
-import { Box } from "@mui/material";
+import { Box, Container, Divider, Typography } from "@mui/material";
 import DepartmentDialog from "~/components/Popup/departmentPop";
 import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
-import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import SkipPreviousIcon from "@mui/icons-material/SkipPrevious";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import FirstComponent from "~/components/DatePicker";
+import DatePick from "~/components/DatePicker";
 import SelectSmall from "~/components/Selected";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { toast } from "react-toastify";
 import ErrorIcon from "@mui/icons-material/Error";
+import dayjs from "dayjs";
 
 export default function ManageStaff() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -66,6 +67,7 @@ export default function ManageStaff() {
   const [startDate, setStartDate] = useState(null);
   const [endD, setEndD] = useState(null);
   const [born, setBorn] = useState(null);
+  const [selectedEmp, setSelectedEmp] = useState(null);
 
   const [emp, setEmp] = useState({
     firstName: "",
@@ -108,6 +110,7 @@ export default function ManageStaff() {
           progress: undefined,
           theme: "colored",
         });
+        window.location.reload();
       })
       .catch((error) => {
         toast.error("Lỗi: " + error.response.data.errMsg, {
@@ -186,6 +189,7 @@ export default function ManageStaff() {
         throw ("Lỗi khi xoá nhân viên:", error);
       });
   };
+
   const dialogContent = {
     title: "Thêm mới nhân viên",
     actionSave: true,
@@ -275,19 +279,13 @@ export default function ManageStaff() {
             </Box>
 
             <Box sx={{ display: "flex", gap: 2.5 }}>
-              <FirstComponent label="Ngày ký hợp đồng" datePick={signDate} />
-              <FirstComponent
-                label="Ngày kết thúc hợp đồng"
-                datePick={endDate}
-              />
+              <DatePick label="Ngày ký hợp đồng" datePick={signDate} />
+              <DatePick label="Ngày kết thúc hợp đồng" datePick={endDate} />
             </Box>
             <Box sx={{ display: "flex", gap: 2.5 }}>
-              <FirstComponent
-                label="Ngày bắt đầy làm việc"
-                datePick={handlePick}
-              />
+              <DatePick label="Ngày bắt đầy làm việc" datePick={handlePick} />
               <Box>
-                <FirstComponent label="Ngày sinh" datePick={dateOfBirth} />
+                <DatePick label="Ngày sinh" datePick={dateOfBirth} />
               </Box>
             </Box>
           </Box>
@@ -295,7 +293,94 @@ export default function ManageStaff() {
       </Box>
     ),
   };
+  const handleSelectEmpByID = (id) => {
+    axios
+      .get(`http://localhost:3002/manage-staff/getEmpByID/${id}`)
+      .then((response) => {
+        setSelectedEmp(response.data);
+      })
+      .catch((error) => {
+        throw error;
+      });
+  };
 
+  const updateContent = {
+    title: "Thông tin nhân viên",
+    actionSave: true,
+    content: (
+      <Container>
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Mã nhân viên: </Typography>
+          <Typography>{selectedEmp?.employeeID}</Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Họ tên: </Typography>
+          <Typography>
+            {selectedEmp?.firstName + " " + selectedEmp?.lastName}
+          </Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Phòng ban: </Typography>
+          <Typography>{selectedEmp?.department.departmentName}</Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Ngày sinh: </Typography>
+          <Typography>
+            {dayjs(selectedEmp?.dateOfBirth).format("DD/MM/YYYY")}
+          </Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Email: </Typography>
+          <Typography>{selectedEmp?.email}</Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Số điện thoại: </Typography>
+          <Typography>{selectedEmp?.phoneNumber}</Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Địa chỉ: </Typography>
+          <Typography>{selectedEmp?.address}</Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Ngày ký hợp đồng: </Typography>
+          <Typography>
+            {dayjs(selectedEmp?.contractSignDate).format("DD/MM/YYYY")}
+          </Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Ngày bắt đầu làm: </Typography>
+          <Typography>
+            {dayjs(selectedEmp?.startDate).format("DD/MM/YYYY")}
+          </Typography>
+        </Box>
+        <Divider />
+
+        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+          <Typography sx={{ width: "30%" }}>Ngày kết thúc: </Typography>
+          <Typography>
+            {dayjs(selectedEmp?.contractEndDate).format("DD/MM/YYYY")}
+          </Typography>
+        </Box>
+        <Divider />
+      </Container>
+    ),
+  };
   return (
     <Box sx={{ display: "flex", flexDirection: "column" }}>
       <Box sx={{ display: "flex" }}>
@@ -339,7 +424,9 @@ export default function ManageStaff() {
                   </td>
                   <td style={tableCellStyle}>{item.phoneNumber}</td>
                   <td style={tableCellStyle}>{item.email}</td>
-                  <td style={tableCellStyle}>{item.department.departmentName}</td>
+                  <td style={tableCellStyle}>
+                    {item.department.departmentName}
+                  </td>
                   <td style={tableCellStyle}>{item.salary}</td>
                   <td style={tableCellStyle}>
                     <Box
@@ -347,13 +434,14 @@ export default function ManageStaff() {
                     >
                       <Box>
                         <DepartmentDialog
-                          dialogContent={dialogContent} // Truyền nội dung vào DepartmentDialog
-                          buttonText={"Sửa"}
-                          icon={<EditIcon />}
+                          dialogContent={updateContent} // Truyền nội dung vào DepartmentDialog
+                          buttonText={"Xem"}
+                          icon={<VisibilityIcon />}
                           varI={"outlined"}
-                          mWidth={"lg"}
+                          mWidth={"md"}
                           onSave={handleSave}
                           onCancel={handleCancel}
+                          selectID={() => handleSelectEmpByID(item._id)}
                         />
                       </Box>
                       <Box>
@@ -362,7 +450,7 @@ export default function ManageStaff() {
                           buttonText={"Xoá"}
                           icon={<DeleteIcon />}
                           varI={"outlined"}
-                          mWidth={"lg"}
+                          mWidth={"md"}
                           onSave={() => handleDel(item._id)}
                           onCancel={handleCancel}
                         />

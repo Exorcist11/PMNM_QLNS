@@ -34,6 +34,8 @@ export default function Navbar() {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+  const account = JSON.parse(localStorage.getItem("account"));
+  const role = account.position.roleName;
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -59,6 +61,7 @@ export default function Navbar() {
             to={"/staff-manage"}
             icon={<PersonIcon />}
             iconPosition="start"
+            sx={{ display: role === "Employee" ? "none" : "" }}
           />
           <Tab
             label="Quản lý phòng ban"
@@ -66,6 +69,7 @@ export default function Navbar() {
             to={"/department"}
             icon={<GroupsIcon />}
             iconPosition="start"
+            sx={{ display: role === "Employee" ? "none" : "" }}
           />
           <Tab
             label="Thông tin cá nhân"
@@ -80,6 +84,7 @@ export default function Navbar() {
             to={"/report"}
             icon={<BarChartIcon />}
             iconPosition="start"
+            sx={{ display: role === "Employee" ? "none" : "" }}
           />
         </Tabs>
       </Box>
