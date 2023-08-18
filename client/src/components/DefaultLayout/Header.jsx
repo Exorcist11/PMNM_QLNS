@@ -10,7 +10,7 @@ import Avatar from "@mui/material/Avatar";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import Settings from "@mui/icons-material/Settings";
+import KeyIcon from "@mui/icons-material/Key";
 import Logout from "@mui/icons-material/Logout";
 import ScoreIcon from "@mui/icons-material/Score";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +28,9 @@ export default function Header() {
   const handleLogout = () => {
     navigate("/login");
     localStorage.clear();
+  };
+  const handleChangePass = () => {
+    navigate("/change-pass");
   };
   const account = JSON.parse(localStorage.getItem("account"));
 
@@ -114,9 +117,9 @@ export default function Header() {
             transformOrigin={{ horizontal: "right", vertical: "top" }}
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
           >
-            <MenuItem onClick={handleClose}>
+            <MenuItem onClick={handleChangePass}>
               <ListItemIcon>
-                <Settings fontSize="small" />
+                <KeyIcon fontSize="small" />
               </ListItemIcon>
               Đổi mật khẩu
             </MenuItem>

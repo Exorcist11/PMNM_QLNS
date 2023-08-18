@@ -80,6 +80,32 @@ export const loginUser = async (req, res) => {
   }
 };
 
+export const changePass = async (req, res) => {
+  const { email, oldPass, newPass, confirmPass } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    const isPass = await bcrypt.compare(oldPass, user.password);
+    const salt = await bcrypt.genSalt(10);
+
+    if (!isPass) {
+      return res.status(401).json({ errMsg: "Mật khẩu cũ không đúng" });
+    }
+    if (newPass !== confirmPass) {
+      return res.status(401).json({ errMsg: "Mật khẩu mới không trùng" });
+    }
+    const hashedNewPass = await bcrypt.hash(newPass, salt);
+
+    const updateResult = await User.updateOne(
+      { email },
+      { $set: { password: hashedNewPass } }
+    );
+
+    return res.status(200).json({ updateResult });
+  } catch (error) {
+    return res.status(500).json({ errMsg: "Internal server error" });
+  }
+};
+
 export const creatStaff = async (req, res) => {
   try {
     const {
@@ -125,6 +151,36 @@ export const creatStaff = async (req, res) => {
       return res.status(400).json({
         errCode: 1,
         errMsg: "Please enter all required information.",
+      });
+    }
+
+    // Calculate age based on date of birth
+    const currentDate = new Date();
+    const birthDate = new Date(dateOfBirth);
+    const age = currentDate.getFullYear() - birthDate.getFullYear();
+    // Check if the employee is at least 18 years old
+    if (age < 18) {
+      return res.status(400).json({
+        errCode: 2,
+        errMsg: "Employee must be at least 18 years old",
+      });
+    }
+
+    // Check if contract end date is after contract sign date
+    const signDate = new Date(contractSignDate);
+    const endDate = new Date(contractEndDate);
+    const startDateT = new Date(startDate);
+    if (signDate >= endDate) {
+      return res.status(400).json({
+        errCode: 2,
+        errMsg: "Contract end date must be after contract sign date",
+      });
+    }
+
+    if (startDateT >= endDate) {
+      return res.status(400).json({
+        errCode: 2,
+        errMsg: "Contract end date must be after contract sign date",
       });
     }
     // Generate a new unique employeeID

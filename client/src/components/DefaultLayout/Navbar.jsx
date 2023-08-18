@@ -20,6 +20,7 @@ export default function Navbar() {
     "/department",
     "/infomation-staff",
     "/report",
+    "/change-pass",
   ];
   const currentRouteIndex = routes.indexOf(location.pathname);
 
@@ -85,6 +86,14 @@ export default function Navbar() {
             icon={<BarChartIcon />}
             iconPosition="start"
             sx={{ display: role === "Employee" ? "none" : "" }}
+          />
+
+          <Tab
+            label="Đổi mật khẩu"
+            component={Link}
+            to={"/change-pass"}
+            icon={<BarChartIcon />}
+            iconPosition="start"
           />
         </Tabs>
       </Box>
