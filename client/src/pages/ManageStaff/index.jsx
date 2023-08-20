@@ -1,4 +1,4 @@
-import { Box, Container, Divider, Typography } from "@mui/material";
+import { Box, Button, Container, Divider, Typography } from "@mui/material";
 import DepartmentDialog from "~/components/Popup/departmentPop";
 import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
@@ -77,6 +77,7 @@ export default function ManageStaff() {
     phoneNumber: "",
     departmentID: "",
     email: "",
+    avatar: "",
     password: "",
     salary: "",
     startDate: "",
@@ -94,6 +95,7 @@ export default function ManageStaff() {
       startDate: startDate,
       departmentID: selectedDept,
       roleID: selectedRole,
+      avatar: selectedImage,
     };
 
     axios
@@ -128,7 +130,9 @@ export default function ManageStaff() {
       });
   };
 
-  const handleCancel = () => {};
+  const handleCancel = () => {
+    window.location.reload();
+  };
   const handlePick = (news) => {
     setStartDate(news.$y + "-" + (news.$M + 1) + "-" + news.$D);
   };
@@ -189,6 +193,20 @@ export default function ManageStaff() {
         throw ("Lỗi khi xoá nhân viên:", error);
       });
   };
+  const [selectedImage, setSelectedImage] = useState(null);
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setSelectedImage(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
 
   const dialogContent = {
     title: "Thêm mới nhân viên",
@@ -221,78 +239,121 @@ export default function ManageStaff() {
             />
           </Box>
 
-          <Box
-            sx={{
-              width: "70%",
-              display: "flex",
-              gap: 2,
-              flexDirection: "column",
-            }}
-          >
-            <Box sx={{ display: "flex", gap: 2, width: "95%" }}>
-              <TextField
-                id="outlined-error"
-                label="Email"
-                onChange={handleOnchange}
-                fullWidth
-                name="email"
-              />
-              <TextField
-                id="outlined-error"
-                label="Mật khẩu"
-                onChange={handleOnchange}
-                fullWidth
-                name="password"
-              />
-            </Box>
-            <Box sx={{ display: "flex", gap: 2, width: "95%" }}>
-              <TextField
-                id="outlined-error"
-                label="Địa chỉ"
-                onChange={handleOnchange}
-                fullWidth
-                name="address"
-              />
-
-              <TextField
-                id="outlined-error"
-                label="Số điện thoại"
-                onChange={handleOnchange}
-                fullWidth
-                name="phoneNumber"
-              />
-            </Box>
-            <Box sx={{ display: "flex", gap: 2.5 }}>
-              <SelectSmall
-                name="Phòng ban"
-                onChangeVar={handleSelectChange}
-                apiURL="http://localhost:3002/departments/getAllDepartment"
-                titleV="departmentName"
-              />
-
-              <SelectSmall
-                name="Vị trí"
-                onChangeVar={handleSelectRole}
-                apiURL="http://localhost:3002/roles/getAllRole"
-                titleV="roleName"
-              />
-            </Box>
-
-            <Box sx={{ display: "flex", gap: 2.5 }}>
-              <DatePick label="Ngày ký hợp đồng" datePick={signDate} />
-              <DatePick label="Ngày kết thúc hợp đồng" datePick={endDate} />
-            </Box>
-            <Box sx={{ display: "flex", gap: 2.5 }}>
-              <DatePick label="Ngày bắt đầy làm việc" datePick={handlePick} />
-              <Box>
-                <DatePick label="Ngày sinh" datePick={dateOfBirth} />
+          <Box sx={{ display: "flex" }}>
+            <Box
+              sx={{
+                width: "70%",
+                display: "flex",
+                gap: 2,
+                flexDirection: "column",
+              }}
+            >
+              <Box sx={{ display: "flex", gap: 2, width: "95%" }}>
+                <TextField
+                  id="outlined-error"
+                  label="Email"
+                  onChange={handleOnchange}
+                  fullWidth
+                  name="email"
+                />
+                <TextField
+                  id="outlined-error"
+                  label="Mật khẩu"
+                  onChange={handleOnchange}
+                  fullWidth
+                  name="password"
+                />
               </Box>
+              <Box sx={{ display: "flex", gap: 2, width: "95%" }}>
+                <TextField
+                  id="outlined-error"
+                  label="Địa chỉ"
+                  onChange={handleOnchange}
+                  fullWidth
+                  name="address"
+                />
+
+                <TextField
+                  id="outlined-error"
+                  label="Số điện thoại"
+                  onChange={handleOnchange}
+                  fullWidth
+                  name="phoneNumber"
+                />
+              </Box>
+              <Box sx={{ display: "flex", gap: 2.5 }}>
+                <SelectSmall
+                  name="Phòng ban"
+                  onChangeVar={handleSelectChange}
+                  apiURL="http://localhost:3002/departments/getAllDepartment"
+                  titleV="departmentName"
+                />
+
+                <SelectSmall
+                  name="Vị trí"
+                  onChangeVar={handleSelectRole}
+                  apiURL="http://localhost:3002/roles/getAllRole"
+                  titleV="roleName"
+                />
+              </Box>
+
+              <Box sx={{ display: "flex", gap: 2.5 }}>
+                <DatePick label="Ngày ký hợp đồng" datePick={signDate} />
+                <DatePick label="Ngày kết thúc hợp đồng" datePick={endDate} />
+              </Box>
+              <Box sx={{ display: "flex", gap: 2.5 }}>
+                <DatePick label="Ngày bắt đầy làm việc" datePick={handlePick} />
+                <Box>
+                  <DatePick label="Ngày sinh" datePick={dateOfBirth} />
+                </Box>
+              </Box>
+            </Box>
+
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                gap: 2,
+                width: "30%",
+              }}
+            >
+              {selectedImage && (
+                <Box sx={{ display: "flex", justifyContent: "center" }}>
+                  <img
+                    src={selectedImage}
+                    alt="Ảnh xem trước"
+                    style={{
+                      maxWidth: "250px",
+                      height: "250px",
+                      objectFit: "cover",
+                    }}
+                  />
+                </Box>
+              )}
+
+              <label
+                htmlFor="image-upload"
+                style={{ display: "flex", justifyContent: "center" }}
+              >
+                <Button variant="outlined" component="span">
+                  Chọn ảnh
+                </Button>
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageUpload}
+                />
+              </label>
             </Box>
           </Box>
         </Box>
       </Box>
     ),
   };
+
   const handleSelectEmpByID = (id) => {
     axios
       .get(`http://localhost:3002/manage-staff/getEmpByID/${id}`)
@@ -309,31 +370,43 @@ export default function ManageStaff() {
     actionSave: true,
     content: (
       <Container>
-        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
-          <Typography sx={{ width: "30%" }}>Mã nhân viên: </Typography>
-          <Typography>{selectedEmp?.employeeID}</Typography>
-        </Box>
-        <Divider />
+        <Box sx={{ display: "flex" }}>
+          <Box sx={{ width: "100%" }}>
+            <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+              <Typography sx={{ width: "35%" }}>Mã nhân viên: </Typography>
+              <Typography>{selectedEmp?.employeeID}</Typography>
+            </Box>
+            <Divider />
 
-        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
-          <Typography sx={{ width: "30%" }}>Họ tên: </Typography>
-          <Typography>
-            {selectedEmp?.firstName + " " + selectedEmp?.lastName}
-          </Typography>
+            <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+              <Typography sx={{ width: "35%" }}>Họ tên: </Typography>
+              <Typography>
+                {selectedEmp?.firstName + " " + selectedEmp?.lastName}
+              </Typography>
+            </Box>
+            <Divider />
+            <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
+              <Typography sx={{ width: "35%" }}>Ngày sinh: </Typography>
+              <Typography>
+                {dayjs(selectedEmp?.dateOfBirth).format("DD/MM/YYYY")}
+              </Typography>
+            </Box>
+            <Divider />
+          </Box>
+          <img
+            src={selectedEmp?.avatar}
+            alt="Avatar"
+            style={{
+              maxWidth: "110px",
+              height: "110px",
+              objectFit: "cover",
+            }}
+          />
         </Box>
-        <Divider />
 
         <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
           <Typography sx={{ width: "30%" }}>Phòng ban: </Typography>
           <Typography>{selectedEmp?.department.departmentName}</Typography>
-        </Box>
-        <Divider />
-
-        <Box sx={{ display: "flex", height: "45px", alignItems: "center" }}>
-          <Typography sx={{ width: "30%" }}>Ngày sinh: </Typography>
-          <Typography>
-            {dayjs(selectedEmp?.dateOfBirth).format("DD/MM/YYYY")}
-          </Typography>
         </Box>
         <Divider />
 

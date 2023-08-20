@@ -30,11 +30,6 @@ const departmentSchema = new mongoose.Schema(
       require: [true, "Require description"],
       trim: true,
     },
-    departmentHead: {
-      type: String,
-      require: [true, "Require department head"],
-      trim: true,
-    },
     contact: {
       type: String,
       require: [true, "Require department contact"],
@@ -76,5 +71,6 @@ departmentSchema.pre("save", async function (next) {
 departmentSchema.virtual("userCount").get(function () {
   return this.users.length;
 });
+
 // Tạo model Department sử dụng departmentSchema
 export const Department = mongoose.model("Department", departmentSchema);

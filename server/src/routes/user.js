@@ -10,5 +10,6 @@ router.delete("/:employeeID", userController.deleteEmployess);
 router.get("/getEmpByID/:empID", userController.getEmpByID);
 router.put("/updateEmpByID/:empID", userController.updateEmp);
 router.post("/change-password", userController.changePass);
+router.get("/report", userController.report);
 
 export default router;

@@ -10,7 +10,7 @@ export const createNewRole = async (req, res) => {
     if (!roleName || !wage) {
       return res.status(400).json({
         errCode: 1,
-        errMsg: "Please enter all required information.",
+        errMsg: "Vui lòng nhập đầy đủ thông tin",
       });
     }
     // Tạo một đối tượng phòng ban mới
@@ -24,13 +24,13 @@ export const createNewRole = async (req, res) => {
 
     return res.status(201).json({
       errCode: 0,
-      errMsg: "Add role data successfully",
+      errMsg: "Thêm chức vụ thành công",
       data: savedRole,
     });
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from the server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };
@@ -49,7 +49,7 @@ export const getAllRole = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from the server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };

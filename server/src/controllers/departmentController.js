@@ -18,7 +18,7 @@ export const getAllDepartment = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from the server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };
@@ -42,7 +42,7 @@ export const getDepartmentByID = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from the server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };
@@ -56,9 +56,15 @@ export const createNewDepartment = async (req, res) => {
     if (!departmentName || !description || !contact || !hotmail || !total) {
       return res.status(400).json({
         errCode: 1,
-        errMsg: "Please enter all required information.",
+        errMsg: "Vui lòng nhập đầy đủ thông tin.",
       });
     }
+
+    const isDept = await Department.findOne({ departmentName: departmentName });
+    if (isDept) {
+      return res.status(400).json({ errMsg: "Phòng ban đã tồn tại" });
+    }
+
     // Tạo một đối tượng phòng ban mới
     const newDepartment = new Department({
       departmentName,
@@ -73,13 +79,13 @@ export const createNewDepartment = async (req, res) => {
 
     return res.status(201).json({
       errCode: 0,
-      errMsg: "added department data successfully",
+      errMsg: "Thêm mới nhân viên thành công",
       data: savedDepartment,
     });
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from the server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };
@@ -88,7 +94,7 @@ export const createNewDepartment = async (req, res) => {
 export const updateDepartment = async (req, res) => {
   try {
     const { departmentID } = req.params;
-    const updatedDepartmentData = req.body; 
+    const updatedDepartmentData = req.body;
     const updatedDepartment = await Department.findByIdAndUpdate(
       departmentID,
       updatedDepartmentData,
@@ -96,13 +102,12 @@ export const updateDepartment = async (req, res) => {
     );
 
     if (!updatedDepartment) {
-      return res.status(404).json({ error: "Department not found" });
+      return res.status(404).json({ errMsg: "Không tìm thấy phòng ban" });
     }
 
     return res.json(updatedDepartment);
   } catch (error) {
-    console.error("Error updating department:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ errMsg: "Lỗi kết nối " + error });
   }
 };
 
@@ -119,18 +124,18 @@ export const deleteDepartment = async (req, res) => {
     if (!deleteDepartment) {
       return res.status(404).json({
         errCode: 2,
-        errMsg: "Department not found!",
+        errMsg: "Không tìm thấy phòng ban",
       });
     }
     await User.deleteMany({ department: deleteDepartment });
     return res.status(200).json({
       errCode: 0,
-      errMsg: "Delete department successfully!",
+      errMsg: "Xoá phòng ban thành công",
     });
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from the server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };

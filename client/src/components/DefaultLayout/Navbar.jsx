@@ -8,6 +8,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import GroupsIcon from "@mui/icons-material/Groups";
 import InfoIcon from "@mui/icons-material/Info";
 import BarChartIcon from "@mui/icons-material/BarChart";
+import KeyIcon from "@mui/icons-material/Key";
 
 export default function Navbar() {
   // Get the current location from React Router
@@ -62,7 +63,7 @@ export default function Navbar() {
             to={"/staff-manage"}
             icon={<PersonIcon />}
             iconPosition="start"
-            sx={{ display: role === "Employee" ? "none" : "" }}
+            sx={{ display: role !== "Manager" ? "none" : "" }}
           />
           <Tab
             label="Quản lý phòng ban"
@@ -70,7 +71,7 @@ export default function Navbar() {
             to={"/department"}
             icon={<GroupsIcon />}
             iconPosition="start"
-            sx={{ display: role === "Employee" ? "none" : "" }}
+            sx={{ display: role !== "Manager" ? "none" : "" }}
           />
           <Tab
             label="Thông tin cá nhân"
@@ -85,14 +86,14 @@ export default function Navbar() {
             to={"/report"}
             icon={<BarChartIcon />}
             iconPosition="start"
-            sx={{ display: role === "Employee" ? "none" : "" }}
+            sx={{ display: role !== "Manager" ? "none" : "" }}
           />
 
           <Tab
             label="Đổi mật khẩu"
             component={Link}
             to={"/change-pass"}
-            icon={<BarChartIcon />}
+            icon={<KeyIcon />}
             iconPosition="start"
           />
         </Tabs>

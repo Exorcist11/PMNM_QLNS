@@ -25,7 +25,7 @@ export const getAllStaff = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };
@@ -52,7 +52,7 @@ export const loginUser = async (req, res) => {
     if (!password) {
       return res.status(404).json({
         errCode: 3,
-        errMsg: "Wrong password!",
+        errMsg: "Sai mật khẩu!",
       });
     }
     if (email && password) {
@@ -75,7 +75,7 @@ export const loginUser = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };
@@ -102,7 +102,7 @@ export const changePass = async (req, res) => {
 
     return res.status(200).json({ updateResult });
   } catch (error) {
-    return res.status(500).json({ errMsg: "Internal server error" });
+    return res.status(500).json({ errMsg: "Lỗi kết nối: " + error });
   }
 };
 
@@ -122,11 +122,12 @@ export const creatStaff = async (req, res) => {
       startDate,
       contractSignDate,
       contractEndDate,
+      avatar
     } = req.body;
 
     const emailExists = await User.isEmailExisted(email);
     if (emailExists) {
-      return res.status(400).json({ error: "Email already exists" });
+      return res.status(400).json({ errMsg: "Email đã tồn tại!" });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -150,7 +151,7 @@ export const creatStaff = async (req, res) => {
     ) {
       return res.status(400).json({
         errCode: 1,
-        errMsg: "Please enter all required information.",
+        errMsg: "Vui lòng nhập đầy đủ thông tin",
       });
     }
 
@@ -162,7 +163,7 @@ export const creatStaff = async (req, res) => {
     if (age < 18) {
       return res.status(400).json({
         errCode: 2,
-        errMsg: "Employee must be at least 18 years old",
+        errMsg: "Nhân viên chưa đủ tuổi ký hợp đồng lao động",
       });
     }
 
@@ -173,14 +174,14 @@ export const creatStaff = async (req, res) => {
     if (signDate >= endDate) {
       return res.status(400).json({
         errCode: 2,
-        errMsg: "Contract end date must be after contract sign date",
+        errMsg: "Ngày kết thúc hợp đồng phải lớn hơn ngày ký hợp đồng",
       });
     }
 
     if (startDateT >= endDate) {
       return res.status(400).json({
         errCode: 2,
-        errMsg: "Contract end date must be after contract sign date",
+        errMsg: "Ngày bắt đầu làm phải bé hơn ngày kết thúc hợp đồng",
       });
     }
     // Generate a new unique employeeID
@@ -193,7 +194,7 @@ export const creatStaff = async (req, res) => {
     if (department.userCount > department.total) {
       return res.status(400).json({
         errCode: 2,
-        errMsg: "More than the number of employees allowed",
+        errMsg: "Vượt quá số lượng nhân viên cho phép",
       });
     }
 
@@ -212,6 +213,7 @@ export const creatStaff = async (req, res) => {
       startDate,
       contractSignDate,
       contractEndDate,
+      avatar
     });
 
     const savedEmp = await newEmployee.save();
@@ -230,7 +232,7 @@ export const creatStaff = async (req, res) => {
 
     return res.status(201).json({
       errCode: 0,
-      errMsg: "Add Employee data successfully",
+      errMsg: "Thêm nhân viên thành công",
       emp: savedEmp,
       dept: updateDepartment,
       role: updateRole,
@@ -238,7 +240,7 @@ export const creatStaff = async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       errCode: -1,
-      errMsg: "Connection error from server: " + error,
+      errMsg: "Lỗi kết nối: " + error,
     });
   }
 };
@@ -251,7 +253,7 @@ export const deleteEmployess = async (req, res) => {
     const employee = await User.findById(employeeId);
 
     if (!employee) {
-      return res.status(404).json({ error: "Nhân viên không tồn tại." });
+      return res.status(404).json({ errMsg: "Nhân viên không tồn tại." });
     }
 
     // Xoá nhân viên khỏi bảng users
@@ -278,7 +280,7 @@ export const getEmpByID = async (req, res) => {
 
     return res.status(200).json(employee);
   } catch (error) {
-    res.status(500).json({ error: "Lỗi khi lấy thông tin nhân viên" });
+    res.status(500).json({ errMsg: "Lỗi kết nối: " + error });
   }
 };
 
@@ -291,7 +293,7 @@ export const updateEmp = async (req, res) => {
     });
 
     if (!updated) {
-      return res.status(404).json({ error: "Employee not found" });
+      return res.status(404).json({ errMsg: "Không tìm thấy nhân viên" });
     }
 
     return res.json({
@@ -299,7 +301,42 @@ export const updateEmp = async (req, res) => {
       errMsg: "Success",
     });
   } catch (error) {
-    console.error("Error updating department:", error);
-    return res.status(500).json({ error: "Internal server error" });
+    return res.status(500).json({ errMsg: "Lỗi kết nối: " + error });
+  }
+};
+
+export const report = async (req, res) => {
+  try {
+    const employee = await User.find();
+    const totalSalary = employee.reduce((total, employee) => {
+      return total + employee.salary;
+    }, 0);
+    const countDepartment = await Department.count();
+    const countEmployee = await User.count();
+
+    const departments = await Department.find();
+    const result = await Promise.all(
+      departments.map(async (department) => {
+        const high = await User.findOne({
+          department: department._id,
+        }).sort({ salary: -1 });
+
+        return {
+          departmentName: department.departmentName,
+          highestEmp: {
+            name: high === null ? "null" : high.firstName + " " + high.lastName,
+            salary: high === null ? "null" : high.salary,
+          },
+        };
+      })
+    );
+    return res.status(200).json({
+      totalSalary,
+      countDepartment,
+      countEmployee,
+      result,
+    });
+  } catch (error) {
+    return res.status(500).json({ errMsg: "Lỗi kết nối: " + error });
   }
 };

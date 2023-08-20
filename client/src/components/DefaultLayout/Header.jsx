@@ -14,6 +14,8 @@ import KeyIcon from "@mui/icons-material/Key";
 import Logout from "@mui/icons-material/Logout";
 import ScoreIcon from "@mui/icons-material/Score";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 export default function Header() {
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -33,6 +35,18 @@ export default function Header() {
     navigate("/change-pass");
   };
   const account = JSON.parse(localStorage.getItem("account"));
+  const [selectedImage, setSelectedImage] = useState(null);
+  useEffect(() => {
+    // Gọi API để lấy dữ liệu
+    axios
+      .get(`http://localhost:3002/manage-staff/getEmpByID/${account._id}`)
+      .then((response) => {
+        setSelectedImage(response.data.avatar || "");
+      })
+      .catch((error) => {
+        throw ("Error fetching data:", error);
+      });
+  }, [account._id]);
 
   return (
     <AppBar position="static" sx={{ padding: "0 30px" }}>
@@ -76,8 +90,20 @@ export default function Header() {
                 aria-haspopup="true"
                 aria-expanded={open ? "true" : undefined}
               >
-                <Avatar sx={{ width: 32, height: 32 }}>
-                  {account.lastName[0]}
+                <Avatar sx={{ width: 32, height: 32, objectFit: "cover" }}>
+                  {account.avatar ? (
+                    <img
+                      src={selectedImage}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                      alt="Avatar"
+                    />
+                  ) : (
+                    account.lastName[0]
+                  )}
                 </Avatar>
               </IconButton>
             </Tooltip>

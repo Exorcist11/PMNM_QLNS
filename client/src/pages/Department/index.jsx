@@ -14,7 +14,7 @@ import ErrorIcon from "@mui/icons-material/Error";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useNavigate } from "react-router-dom";
-// import Paging from "~/components/Paging";
+
 
 export default function Department() {
   const [data, setData] = useState([]);

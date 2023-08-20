@@ -1,4 +1,4 @@
-import { Box, Container, Divider } from "@mui/material";
+import { Avatar, Box, Container, Divider } from "@mui/material";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import DatePick from "~/components/DatePicker";
@@ -16,7 +16,7 @@ export default function InformationStaff() {
     phoneNumber: "",
     address: "",
   });
-
+  const [selectedImage, setSelectedImage] = useState(null);
   useEffect(() => {
     // Gọi API để lấy dữ liệu
     axios
@@ -24,12 +24,12 @@ export default function InformationStaff() {
       .then((response) => {
         // Lưu trữ dữ liệu từ API vào state
         setData(response.data);
+        setSelectedImage(response.data.avatar || "");
       })
       .catch((error) => {
         throw ("Error fetching data:", error);
       });
   }, [account._id]);
-
   const [selectTime, setSelectTime] = useState(data.dateOfBirth);
   const handleSelectTime = (event) => {
     setSelectTime(event.$y + "-" + (event.$M + 1) + "-" + event.$D);
@@ -38,13 +38,36 @@ export default function InformationStaff() {
   const formattedDate = moment(account.contractSignDate)
     .utc()
     .format("DD/MM/YYYY");
+
+  const handleFieldChange = (event) => {
+    const { name, value } = event.target;
+    setData((prevState) => ({
+      ...prevState,
+      [name]: value,
+    }));
+  };
+
+  const handleImageUpload = (event) => {
+    const file = event.target.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      setSelectedImage(reader.result);
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
   const saveChange = () => {
     const update = {
       dateOfBirth: selectTime,
       email: data.email,
       phoneNumber: data.phoneNumber,
       address: data.address,
+      avatar: selectedImage,
     };
+
     axios
       .put(
         `http://localhost:3002/manage-staff/updateEmpByID/${account._id}`,
@@ -76,20 +99,10 @@ export default function InformationStaff() {
         throw error;
       });
   };
-  const handleFieldChange = (event) => {
-    const { name, value } = event.target;
-    setData((prevState) => ({
-      ...prevState,
-      [name]: value,
-    }));
-  };
-
   return (
     <Container>
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-        <Typography variant="h3" gutterBottom>
-          Thông tin cá nhân
-        </Typography>
+        <h1>Thông tin cá nhân</h1>
         <Box
           sx={{
             display: "flex",
@@ -103,6 +116,35 @@ export default function InformationStaff() {
           <Typography variant="h6" gutterBottom sx={{ marginTop: "10px" }}>
             Thông tin cơ bản
           </Typography>
+
+          <Box sx={{ height: "auto", display: "flex", alignItems: "center" }}>
+            <Typography variant="body1" gutterBottom sx={{ width: "200px" }}>
+              Avatar
+            </Typography>
+            <Typography variant="body2" gutterBottom sx={{ width: "200px" }}>
+              <label
+                htmlFor="image-upload"
+                style={{
+                  display: "inline-block",
+                  cursor: "pointer",
+                  transition: "transform 0.2s ease",
+                }}
+              >
+                <Avatar
+                  src={selectedImage}
+                  sx={{ width: "50px", height: "50px", objectFit: "cover" }}
+                />
+                <input
+                  id="image-upload"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageUpload}
+                />
+              </label>
+            </Typography>
+          </Box>
+          <Divider />
 
           <Box sx={{ height: "50px", display: "flex", alignItems: "center" }}>
             <Typography variant="body1" gutterBottom sx={{ width: "200px" }}>
