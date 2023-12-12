@@ -42,6 +42,8 @@ export default function ChangePass() {
           progress: undefined,
           theme: "colored",
         });
+        navigate("/login");
+        localStorage.clear();
       })
       .catch((error) => {
         toast.error("Lỗi: " + error.response.data.errMsg, {

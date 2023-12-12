@@ -1,4 +1,10 @@
-import { Box, Button, Container, Divider, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  Container,
+  Divider,
+  Typography,
+} from "@mui/material";
 import DepartmentDialog from "~/components/Popup/departmentPop";
 import AddIcon from "@mui/icons-material/Add";
 import TextField from "@mui/material/TextField";
@@ -17,18 +23,14 @@ import dayjs from "dayjs";
 
 export default function ManageStaff() {
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // Số lượng hàng hiển thị trên mỗi trang
+  const itemsPerPage = 5;
   const [data, setData] = useState([]);
 
-  // Tính toán số lượng trang
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  // Tính toán dữ liệu cho trang hiện tại
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
   const currentData = data.slice(indexOfFirstItem, indexOfLastItem);
-
-  // Hàm xử lý khi người dùng thay đổi trang
   const paginate = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -36,11 +38,9 @@ export default function ManageStaff() {
   };
 
   useEffect(() => {
-    // Gọi API để lấy dữ liệu
     axios
       .get(`http://localhost:3002/manage-staff/getAllStaff`)
       .then((response) => {
-        // Lưu trữ dữ liệu từ API vào state
         setData(response.data);
       })
       .catch((error) => {
@@ -571,6 +571,7 @@ export default function ManageStaff() {
             <SkipNextIcon titleAccess="Next" />
           </IconButton>
         </div>
+        
       </Box>
     </Box>
   );

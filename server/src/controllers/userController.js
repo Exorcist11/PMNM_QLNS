@@ -90,6 +90,9 @@ export const changePass = async (req, res) => {
     if (!isPass) {
       return res.status(401).json({ errMsg: "Mật khẩu cũ không đúng" });
     }
+    if (newPass.length < 8) {
+      return res.status(400).json({ errMsg: "Mật khẩu phải hơn 8 ký tự!" });
+    }
     if (newPass !== confirmPass) {
       return res.status(401).json({ errMsg: "Mật khẩu mới không trùng" });
     }
@@ -122,14 +125,16 @@ export const creatStaff = async (req, res) => {
       startDate,
       contractSignDate,
       contractEndDate,
-      avatar
+      avatar,
     } = req.body;
 
     const emailExists = await User.isEmailExisted(email);
     if (emailExists) {
       return res.status(400).json({ errMsg: "Email đã tồn tại!" });
     }
-
+    if (password.length < 8) {
+      return res.status(400).json({ errMsg: "Mật khẩu phải hơn 8 ký tự!" });
+    }
     const salt = await bcrypt.genSalt(10);
     const hashed = await bcrypt.hash(password, salt);
     const department = await Department.findById(departmentID);
@@ -213,7 +218,7 @@ export const creatStaff = async (req, res) => {
       startDate,
       contractSignDate,
       contractEndDate,
-      avatar
+      avatar,
     });
 
     const savedEmp = await newEmployee.save();
